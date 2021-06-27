@@ -8,7 +8,8 @@ const app = Vue.createApp({
             monsterHealth: 100,
             playerHealth: 100,
             currentRound: 0,
-            winner: null
+            winner: null,
+            logMessages: []
         }
     },
     computed: {
@@ -30,6 +31,7 @@ const app = Vue.createApp({
     },
     methods: {
         startGame(){
+            this.logMessages=[];
             this.playerHealth=100;
             this.monsterHealth=100;
             this.winner=null;
@@ -40,16 +42,19 @@ const app = Vue.createApp({
             const attackValue = getRandomaNumber(5, 12);
             this.monsterHealth -= attackValue;
             this.attackPlayer();
+            this.addLogMessages('player', 'attack', attackValue);
         },
         attackPlayer(){
             const attackValue = getRandomaNumber(8, 15);
             this.playerHealth -= attackValue;
+            this.addLogMessages('monster', 'attack', attackValue);
         },
         specialAttack () {
             this.currentRound += 1;
             const attackValue = getRandomaNumber(10, 25);
             this.monsterHealth -= attackValue;
             this.attackPlayer();
+            this.addLogMessages('player', 'attack', attackValue);
         },
         healPlayer(){
             this.currentRound += 1;
@@ -60,9 +65,17 @@ const app = Vue.createApp({
                 this.playerHealth += healValue;
             }
             this.attackPlayer();
+            this.addLogMessages('player', 'heal', healValue);
         },
         surrender(){
             this.winner='monster';
+        },
+        addLogMessages(who, what, value){
+            this.logMessages.unshift({
+                actionBy: who,
+                actionType: what,
+                actionValue: value
+            }); // instead of push (which adds at the end of the array), unshift adds at the beginning of the array
         }
     },
     watch: {
